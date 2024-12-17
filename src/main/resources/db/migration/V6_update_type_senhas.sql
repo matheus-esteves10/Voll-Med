@@ -1,0 +1,1 @@
+update usuarios set senha = '$2a$10$Y50UaMFOxteibQEYLrwuHeehHYfcoafCopUazP12.rqB41bsolF5.';

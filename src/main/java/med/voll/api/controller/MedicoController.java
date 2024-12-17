@@ -26,7 +26,7 @@ public class MedicoController {
     public ResponseEntity cadastrarMedico (@RequestBody @Valid DadosCadastroMedico dados, UriComponentsBuilder uriBuilder){
         var medico = new Medico(dados);
         repository.save(medico);
-        var uri = uriBuilder.path("/medicos/{id}").buildAndExpand(medico.getId()).toUri();
+        var uri = uriBuilder.path("/medicos/{id}").buildAndExpand(medico.getId()).toUri(); //mostra o endpoint get com id no header
         return ResponseEntity.created(uri).body(new DadosDetalhamentoMedicos(medico));
     }
 
