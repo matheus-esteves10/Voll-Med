@@ -1,0 +1,81 @@
+package med.voll.api.service;
+
+import med.voll.api.dto.consulta.DadosAgendamentoConsulta;
+import med.voll.api.exceptions.ValidacaoException;
+import med.voll.api.repository.ConsultaRepository;
+import med.voll.api.repository.MedicoRepository;
+import med.voll.api.repository.PacienteRepository;
+import org.springframework.stereotype.Component;
+
+import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.LocalDateTime;
+
+@Component
+public class ValidacoesConsulta {
+
+    private MedicoRepository medicoRepository;
+    private ConsultaRepository consultaRepository;
+    private PacienteRepository pacienteRepository;
+
+    public void validarHorarioFuncionamento (DadosAgendamentoConsulta dadosAgendamentoConsulta) {
+        var dataConsulta = dadosAgendamentoConsulta.data();
+
+        var domingo = dataConsulta.getDayOfWeek().equals(DayOfWeek.SUNDAY);
+        var antesDaAbertura = dataConsulta.getHour() < 7;
+        var depoisDoEncerramento = dataConsulta.getHour() > 18;
+
+        if (domingo || antesDaAbertura || depoisDoEncerramento) {
+            throw new ValidacaoException("Consulta fora do horário de funcionamento da clínica");
+        }
+    }
+
+    public void validaHorarioAntecedencia (DadosAgendamentoConsulta dadosAgendamentoConsulta) {
+        var dataConsulta = dadosAgendamentoConsulta.data();
+
+        var agora = LocalDateTime.now();
+        var diferencaEmMinutos = Duration.between(agora, dataConsulta).toMinutes();
+
+        if (diferencaEmMinutos > 30) {
+            throw new ValidacaoException("A consulta deve ser agendada com antecedencia mínima de 30 minutos");
+        }
+    }
+
+    public void validaMedicoAtivo(DadosAgendamentoConsulta dadosAgendamentoConsulta) {
+
+        if(dadosAgendamentoConsulta.idMedico() == null) { //validação pelo id do médico ser um optional
+            return;
+        }
+
+        var medicoIsAtivo = medicoRepository.findAtivoById(dadosAgendamentoConsulta.idMedico());
+
+        if (!medicoIsAtivo) {
+            throw new ValidacaoException("Médico está inativo");
+        }
+    }
+
+    public void validaExistenciaConsultaMesmoHorario (DadosAgendamentoConsulta dadosAgendamentoConsulta) {
+        var medicoPossuiConsultaNoHorario = consultaRepository.existsByMedicoIdAndData(dadosAgendamentoConsulta.idMedico(), dadosAgendamentoConsulta.data());
+        if (medicoPossuiConsultaNoHorario) {
+            throw new ValidacaoException("Médico já possui outra consulta nesse horário");
+        }
+    }
+
+    public void validaPacienteAtivo (DadosAgendamentoConsulta dadosAgendamentoConsulta) {
+        var pacienteIsAtivo = pacienteRepository.findAtivoById(dadosAgendamentoConsulta.idPaciente());
+
+        if(!pacienteIsAtivo) {
+            throw new ValidacaoException("Paciente está inativo");
+        }
+    }
+
+    public void validaOutraConsultaNoDia (DadosAgendamentoConsulta dadosAgendamentoConsulta) {
+        var primeiroHorario = dadosAgendamentoConsulta.data().withHour(7);
+        var ultimoHorario = dadosAgendamentoConsulta.data().withHour(18);
+        var pacienteTemOutraConsulta = consultaRepository.existsByPacienteIdAndDataBetween(dadosAgendamentoConsulta.idPaciente(), primeiroHorario, ultimoHorario);
+
+        if(pacienteTemOutraConsulta) {
+            throw new ValidacaoException("O paciente não pode ter outra consulta marcada no dia na clínica");
+        }
+    }
+}
