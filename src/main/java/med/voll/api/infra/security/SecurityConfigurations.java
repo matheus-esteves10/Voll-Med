@@ -26,7 +26,8 @@ public class SecurityConfigurations {
         return http.csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> {
-                    authorize.requestMatchers("/login").permitAll();
+                    authorize.requestMatchers("/login").permitAll()
+                            .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
                     authorize.anyRequest().authenticated(); //necessita de token para outras reaquisições
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class) //adiciona filtro desenvolvido antes do filtro do Spring
