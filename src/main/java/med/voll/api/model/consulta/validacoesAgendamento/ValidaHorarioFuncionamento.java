@@ -1,4 +1,4 @@
-package med.voll.api.domain.consulta.validacoesConsulta;
+package med.voll.api.model.consulta.validacoesAgendamento;
 
 import med.voll.api.dto.consulta.DadosAgendamentoConsulta;
 import med.voll.api.exceptions.ValidacaoException;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.time.DayOfWeek;
 
 @Component
-public class ValidaHorarioFuncionamento implements ValidacaoConsulta{
+public class ValidaHorarioFuncionamento implements ValidacaoAgendamento {
 
     public void valida (DadosAgendamentoConsulta dadosAgendamentoConsulta) {
         var dataConsulta = dadosAgendamentoConsulta.data();

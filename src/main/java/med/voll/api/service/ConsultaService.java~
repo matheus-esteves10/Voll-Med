@@ -83,7 +83,15 @@ public class ConsultaService {
             throw new ValidacaoException("A consulta não existe no banco de dados");
         }
 
-        validadoresCancelamento.forEach(v -> v.valida(dados));
+        var dataAtual = LocalDateTime.now();
+        var diferencaMinima = Duration.between(dataAtual, dados.dadosDetalhamentoConsulta().data()).toHours();
+        System.out.println("Diferença mínima:" + diferencaMinima);
+
+        if (diferencaMinima < 24) {
+            throw new ValidacaoException("Para cancelar a consulta é necessário pelo menos 24h de antecedencia");
+        }
+
+        //validadoresCancelamento.forEach(v -> v.valida(dados));
 
         consultaRepository.deleteById(dados.dadosDetalhamentoConsulta().id());
     }

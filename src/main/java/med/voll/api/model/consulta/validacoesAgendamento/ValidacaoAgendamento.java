@@ -1,8 +1,8 @@
-package med.voll.api.model.consulta.validacoesConsulta;
+package med.voll.api.model.consulta.validacoesAgendamento;
 
 import med.voll.api.dto.consulta.DadosAgendamentoConsulta;
 
-public interface ValidacaoConsulta {
+public interface ValidacaoAgendamento {
 
     void valida(DadosAgendamentoConsulta dados);
 }

@@ -1,4 +1,4 @@
-package med.voll.api.model.consulta.validacoesConsulta;
+package med.voll.api.model.consulta.validacoesAgendamento;
 
 import med.voll.api.dto.consulta.DadosAgendamentoConsulta;
 import med.voll.api.exceptions.ValidacaoException;
@@ -8,7 +8,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Component
-public class ValidaHorarioAntecedencia implements ValidacaoConsulta{
+public class ValidaHorarioAntecedencia implements ValidacaoAgendamento {
 
     public void valida (DadosAgendamentoConsulta dadosAgendamentoConsulta) {
         var dataConsulta = dadosAgendamentoConsulta.data();
